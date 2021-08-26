@@ -96,6 +96,7 @@ class MovieCrawlingTest {
         }
         //select를 이용하여 원하는 태그를 선택한다. select는 원하는 값을 가져오기 위한 중요한 기능이다.
         Elements element = doc.select("div.sect-movie-chart");
+        System.out.println(element.text());
 
         System.out.println("============================================================");
 
@@ -104,7 +105,7 @@ class MovieCrawlingTest {
         Iterator<Element> ie2 = element.select("strong.title").iterator();
 
         while (ie1.hasNext()) {
-            System.out.println(ie1.next().text()+"\t"+ie2.next().text());
+            System.out.println(ie1.next().text() + "\t" + ie2.next().text());
         }
 
         System.out.println("============================================================");
