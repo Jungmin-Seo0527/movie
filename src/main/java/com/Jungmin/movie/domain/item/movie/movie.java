@@ -21,21 +21,16 @@ import static lombok.AccessLevel.*;
 public class movie {
 
     @Id @GeneratedValue
+    @Column(name = "movie_id")
     private Long id;
 
-    @Column
     private String title;
 
-    @Column
     private int rank;
 
-    @Column
     private int price;
 
-    @Column
     private String genre;
 
-    @Column
     private String url;
-
 }

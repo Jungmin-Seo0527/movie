@@ -21,14 +21,12 @@ import static lombok.AccessLevel.PRIVATE;
 public class User {
 
     @Id @GeneratedValue
+    @Column(name = "user_id")
     private Long id;
 
-    @Column
     private String publicId;
 
-    @Column
     private String userName;
 
-    @Column
     private String userNickName;
 }
