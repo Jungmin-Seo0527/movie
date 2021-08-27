@@ -1,4 +1,4 @@
-package com.Jungmin.movie.crawling;
+package com.Jungmin.movie.domain.item.movie.crawling;
 
 import com.Jungmin.movie.domain.item.movie.Movie;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class MovieCrawling {
+public class GoogleMovieCrawling {
 
     private final WebDriver driver;
     private final JavascriptExecutor js;
@@ -28,7 +28,7 @@ public class MovieCrawling {
     public static String WEB_DRIVER_PATH = "chromedriver_win32/chromedriver.exe";
     private final int interval = 2000;
 
-    public MovieCrawling() {
+    public GoogleMovieCrawling() {
         // WebDriver 경로 설정
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
 
