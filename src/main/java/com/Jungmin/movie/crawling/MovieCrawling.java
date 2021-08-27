@@ -70,7 +70,8 @@ public class MovieCrawling {
      *
      * @return List<Movie>
      */
-    public List<Movie> scrapingSource() {
+    public List<Movie> scrapingSource() throws InterruptedException {
+        scrollDownToBottom();
         List<Movie> movieList = new ArrayList<>();
         Document html = Jsoup.parse(driver.getPageSource(), url);
         Iterator<Element> movies = html.getElementsByClass("Vpfmgd").iterator();
