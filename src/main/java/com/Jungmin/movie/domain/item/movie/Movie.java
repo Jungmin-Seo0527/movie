@@ -18,7 +18,7 @@ import static lombok.AccessLevel.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class movie {
+public class Movie {
 
     @Id @GeneratedValue
     @Column(name = "movie_id")
