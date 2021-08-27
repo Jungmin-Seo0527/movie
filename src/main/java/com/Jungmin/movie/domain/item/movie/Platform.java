@@ -16,21 +16,15 @@ import static lombok.AccessLevel.*;
 @Entity
 @Getter @Setter(PRIVATE)
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class movie {
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PRIVATE)
+public class Platform {
 
     @Id @GeneratedValue
-    @Column(name = "movie_id")
+    @Column(name = "platform_id")
     private Long id;
 
-    private String title;
-
-    private int rank;
-
-    private int price;
-
-    private String genre;
+    private String name;
 
     private String url;
 }

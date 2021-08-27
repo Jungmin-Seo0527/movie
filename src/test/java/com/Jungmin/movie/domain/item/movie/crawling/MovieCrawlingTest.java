@@ -1,4 +1,4 @@
-package com.Jungmin.movie.crawling;
+package com.Jungmin.movie.domain.item.movie.crawling;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
