@@ -71,35 +71,26 @@ public class MovieCrawling {
     }
 
     public void scrapingSource() throws IOException {
-        // Document html = Jsoup.parse(driver.getPageSource(), url);
-        log.debug("저장되어 있는 HTML 문서로 파싱");
-        BufferedReader br = new BufferedReader(new FileReader("HTML"));
-        StringBuilder sb = new StringBuilder();
-        String s;
-        while ((s = br.readLine()) != null) {
-            sb.append(s).append("\n");
-        }
-
-        Document html = Jsoup.parse(sb.toString());
-
-        Iterator<Element> title = html.getElementsByClass("WsMG1c nnK0zc").iterator();
-        Iterator<Element> genre = html.getElementsByClass("KoLSrc").iterator();
-        Iterator<Element> price = html.getElementsByClass("VfPpfd ZdBevf i5DZme").iterator();
-        Iterator<Element> movieUrl = html.getElementsByClass("b8cIId ReQCgd Q9MA7b").iterator();
+        Document html = Jsoup.parse(driver.getPageSource(), url);
+        Iterator<Element> movies = html.getElementsByClass("Vpfmgd").iterator();
 
         int rank = 1;
-        while (title.hasNext()) {
-            System.out.print("rank = " + rank++ + "\t");
-            System.out.print("title = " + title.next().text() + "\t\t\t\t");
-            System.out.print("genre = " + genre.next().text() + "\t\t\t");
-            System.out.print("price = " + price.next().text() + "\t\t\t");
-            System.out.println("movieURL = " + movieUrl.next().text() + "\t");
+        while (movies.hasNext()) {
+            Element movie = movies.next();
+            String title = movie.getElementsByClass("WsMG1c nnK0zc").text();
+            String genre = movie.getElementsByClass("KoLSrc").text();
+            if (genre.length() != 0) {
+                genre = genre.substring(0, genre.length() / 2);
+            }
+            String price = movie.getElementsByClass("VfPpfd ZdBevf i5DZme").text();
+
+            System.out.println("rank= " + rank++ + "title= " + title + "  genre= " + genre + " price= " + price);
         }
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        MovieCrawling bot1 = new MovieCrawling(false);
-        // bot1.scrollDownToBottom();
+        MovieCrawling bot1 = new MovieCrawling(true);
+        bot1.scrollDownToBottom();
         bot1.scrapingSource();
     }
 }
