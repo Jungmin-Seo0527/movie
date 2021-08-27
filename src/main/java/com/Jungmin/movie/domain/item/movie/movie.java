@@ -1,4 +1,4 @@
-package com.Jungmin.movie.domain.user;
+package com.Jungmin.movie.domain.item.movie;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,22 +11,26 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.*;
 
 @Entity
 @Getter @Setter(PRIVATE)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class movie {
 
     @Id @GeneratedValue
-    @Column(name = "user_id")
+    @Column(name = "movie_id")
     private Long id;
 
-    private String publicId;
+    private String title;
 
-    private String userName;
+    private int rank;
 
-    private String userNickName;
+    private int price;
+
+    private String genre;
+
+    private String url;
 }
