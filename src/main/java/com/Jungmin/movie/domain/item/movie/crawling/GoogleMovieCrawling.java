@@ -1,6 +1,7 @@
 package com.Jungmin.movie.domain.item.movie.crawling;
 
 import com.Jungmin.movie.domain.item.movie.Movie;
+import com.Jungmin.movie.domain.item.movie.PopularMovie;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -70,9 +71,9 @@ public class GoogleMovieCrawling {
      *
      * @return List<Movie>
      */
-    public List<Movie> scrapingSource() throws InterruptedException {
+    public List<PopularMovie> scrapingSource() throws InterruptedException {
         scrollDownToBottom();
-        List<Movie> movieList = new ArrayList<>();
+        List<PopularMovie> movieList = new ArrayList<>();
         Document html = Jsoup.parse(driver.getPageSource(), url);
         Iterator<Element> movies = html.getElementsByClass("Vpfmgd").iterator();
         String platformUrl = "https://play.google.com";
@@ -87,7 +88,7 @@ public class GoogleMovieCrawling {
             }
             String price = movie.getElementsByClass("VfPpfd ZdBevf i5DZme").text().replaceAll("[^0-9]", "");
             String link = movie.getElementsByClass("JC71ub").attr("href");
-            movieList.add(Movie.builder()
+            movieList.add(PopularMovie.builder()
                     .rank(rank++)
                     .title(title)
                     .price(Integer.parseInt(price))
