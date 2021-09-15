@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -31,4 +33,7 @@ public class Movie {
     private String genre;
 
     private String url;
+
+    @Enumerated(EnumType.STRING)
+    private Platform platform;
 }

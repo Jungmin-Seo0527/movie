@@ -1,11 +1,13 @@
 package com.Jungmin.movie.domain.item.movie.crawling;
 
 import com.Jungmin.movie.domain.item.movie.Movie;
+import com.Jungmin.movie.domain.item.movie.Platform;
 import com.Jungmin.movie.domain.item.movie.PopularMovie;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,17 +21,20 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class GoogleMovieCrawling {
+public class MovieCrawling {
 
     private final WebDriver driver;
-    private final JavascriptExecutor js;
-    private final String url;
+
+    private JavascriptExecutor js;
+    private String url;
+    private Iterator<Element> movies;
+    private List<Document> htmlList = new ArrayList<>();
 
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static String WEB_DRIVER_PATH = "chromedriver_win32/chromedriver.exe";
     private final int interval = 2000;
 
-    public GoogleMovieCrawling() {
+    public MovieCrawling() {
         // WebDriver 경로 설정
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
 
@@ -39,10 +44,14 @@ public class GoogleMovieCrawling {
         options.setHeadless(true);
 
         driver = new ChromeDriver(options);
+    }
 
-        url = "https://play.google.com/store/movies/top";
+    public MovieCrawling connectUrl(Platform platform) {
+        if (platform.equals(Platform.GOOGLE)) url = Platform.GOOGLE_POPULAR_URL;
+        else if (platform.equals(Platform.NAVER)) url = Platform.NAVER_POPULAR_URL;
         js = (JavascriptExecutor) driver;
         driver.get(url);
+        return this;
     }
 
     /**
@@ -51,7 +60,7 @@ public class GoogleMovieCrawling {
      * @throws InterruptedException
      * @throws IOException
      */
-    public void scrollDownToBottom() throws InterruptedException {
+    public MovieCrawling scrollDownToBottom() throws InterruptedException {
         log.info("scroll down to bottom");
         Long prev_height = (Long) js.executeScript("return document.body.scrollHeight");
         while (true) {
@@ -64,6 +73,7 @@ public class GoogleMovieCrawling {
             prev_height = cur_height;
         }
         log.info("Scrolling success!!!");
+        return this;
     }
 
     /**
@@ -71,13 +81,51 @@ public class GoogleMovieCrawling {
      *
      * @return List<Movie>
      */
-    public List<PopularMovie> scrapingSource() throws InterruptedException {
-        scrollDownToBottom();
-        List<PopularMovie> movieList = new ArrayList<>();
+    public MovieCrawling scrapingSource() {
         Document html = Jsoup.parse(driver.getPageSource(), url);
-        Iterator<Element> movies = html.getElementsByClass("Vpfmgd").iterator();
-        String platformUrl = "https://play.google.com";
+        movies = html.getElementsByClass("Vpfmgd").iterator();
+        return this;
+    }
 
+    public MovieCrawling scrapingNaverHtml() {
+        for (int i = 1; i <= 6; i++) {
+            String curUrl = Platform.NAVER_POPULAR_URL.replace("page=0", "page=" + i);
+            driver.get(curUrl);
+            htmlList.add(Jsoup.parse(driver.getPageSource(), curUrl));
+        }
+        return this;
+    }
+
+    public List<PopularMovie> getResultNaverMoviesByList() {
+        List<PopularMovie> movieList = new ArrayList<>();
+
+        int rank = 1;
+        for (int i = 0; i < htmlList.size(); i++) {
+
+            movies = htmlList.get(i).getElementsByTag("li").iterator();
+
+            while (movies.hasNext()) {
+                Element movie = this.movies.next();
+                // System.out.println("movie = " + movie);
+                String title = movie.getElementsByClass("NPI=a:dcontent").attr("title");
+                if(title.isBlank()) continue;
+
+                System.out.println("title = " + title);
+            }
+        }
+
+        return movieList;
+    }
+
+    public static void main(String[] args) {
+        MovieCrawling m = new MovieCrawling();
+        List<PopularMovie> resultNaverMoviesByList = m.connectUrl(Platform.NAVER)
+                .scrapingNaverHtml()
+                .getResultNaverMoviesByList();
+    }
+
+    public List<PopularMovie> getResultByList() {
+        List<PopularMovie> movieList = new ArrayList<>();
         int rank = 1;
         while (movies.hasNext()) {
             Element movie = movies.next();
@@ -93,10 +141,10 @@ public class GoogleMovieCrawling {
                     .title(title)
                     .price(Integer.parseInt(price))
                     .genre(genre)
-                    .url(platformUrl + link)
+                    .url(Platform.GOOGLE_URL + link)
+                    .platform(Platform.GOOGLE)
                     .build());
         }
-        log.info("done");
         return movieList;
     }
 }

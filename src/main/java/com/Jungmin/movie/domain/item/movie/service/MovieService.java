@@ -1,8 +1,8 @@
 package com.Jungmin.movie.domain.item.movie.service;
 
+import com.Jungmin.movie.domain.item.movie.Platform;
 import com.Jungmin.movie.domain.item.movie.PopularMovie;
-import com.Jungmin.movie.domain.item.movie.crawling.GoogleMovieCrawling;
-import com.Jungmin.movie.domain.item.movie.Movie;
+import com.Jungmin.movie.domain.item.movie.crawling.MovieCrawling;
 import com.Jungmin.movie.domain.item.movie.repository.MovieRepository;
 import com.Jungmin.movie.domain.item.movie.repository.PopularMovieRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,14 @@ import java.util.List;
 public class MovieService {
     private final MovieRepository movieRepository;
     private final PopularMovieRepository popularMovieRepository;
-    private final GoogleMovieCrawling movieCrawling;
+    private final MovieCrawling movieCrawling;
 
     @Transactional
     public List<PopularMovie> refreshPopularList() throws InterruptedException {
-        List<PopularMovie> movies = movieCrawling.scrapingSource();
+        List<PopularMovie> movies = movieCrawling.connectUrl(Platform.GOOGLE)
+                .scrollDownToBottom()
+                .scrapingSource()
+                .getResultByList();
         return popularMovieRepository.saveAll(movies);
     }
 }
