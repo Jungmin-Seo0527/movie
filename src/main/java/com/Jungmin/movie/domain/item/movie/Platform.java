@@ -1,30 +1,15 @@
 package com.Jungmin.movie.domain.item.movie;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import static lombok.AccessLevel.*;
+public enum Platform {
+    GOOGLE, NAVER;
 
-@Entity
-@Getter @Setter(PRIVATE)
-@Builder
-@NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor(access = PRIVATE)
-public class Platform {
+    public static String GOOGLE_POPULAR_URL = "https://play.google.com/store/movies/top";
+    public static String GOOGLE_URL = "https://play.google.com";
 
-    @Id @GeneratedValue
-    @Column(name = "platform_id")
-    private Long id;
-
-    private String name;
-
-    private String url;
+    public static String NAVER_POPULAR_URL = "https://serieson.naver.com/movie/top100List.nhn?page=0&rankingTypeCode=PC_D";
+    public static String NAVER_URL = "https://serieson.naver.com";
 }

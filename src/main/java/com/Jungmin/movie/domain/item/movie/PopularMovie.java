@@ -13,14 +13,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
 
 @Entity
 @Getter @Setter(PRIVATE)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Movie {
+public class PopularMovie {
 
     @Id @GeneratedValue
     @Column(name = "movie_id")
@@ -28,11 +28,15 @@ public class Movie {
 
     private String title;
 
+    private int rank;
+
     private int price;
 
     private String genre;
 
     private String url;
+
+    private float star;
 
     @Enumerated(EnumType.STRING)
     private Platform platform;

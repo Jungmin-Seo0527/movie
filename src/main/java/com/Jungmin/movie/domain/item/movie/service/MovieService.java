@@ -1,8 +1,10 @@
 package com.Jungmin.movie.domain.item.movie.service;
 
-import com.Jungmin.movie.domain.item.movie.crawling.GoogleMovieCrawling;
-import com.Jungmin.movie.domain.item.movie.Movie;
+import com.Jungmin.movie.domain.item.movie.Platform;
+import com.Jungmin.movie.domain.item.movie.PopularMovie;
+import com.Jungmin.movie.domain.item.movie.crawling.MovieCrawling;
 import com.Jungmin.movie.domain.item.movie.repository.MovieRepository;
+import com.Jungmin.movie.domain.item.movie.repository.PopularMovieRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieService {
     private final MovieRepository movieRepository;
-    private final GoogleMovieCrawling movieCrawling;
+    private final PopularMovieRepository popularMovieRepository;
+    private final MovieCrawling movieCrawling;
 
     @Transactional
-    public List<Movie> refreshPopularList() throws InterruptedException {
-        List<Movie> movies = movieCrawling.scrapingSource();
-        return movieRepository.saveAll(movies);
+    public List<PopularMovie> refreshGooglePopularMovies() throws InterruptedException {
+        List<PopularMovie> movies = movieCrawling.connectUrl(Platform.GOOGLE)
+                .scrollDownToBottom()
+                .scrapingSource()
+                .getResultByList();
+
+        return popularMovieRepository.saveAll(movies);
+    }
+
+    @Transactional
+    public List<PopularMovie> refreshNaverPopularMovies() {
+        List<PopularMovie> movies = movieCrawling.connectUrl(Platform.NAVER)
+                .scrapingNaverHtml()
+                .getResultNaverMoviesByList();
+        return popularMovieRepository.saveAll(movies);
     }
 }

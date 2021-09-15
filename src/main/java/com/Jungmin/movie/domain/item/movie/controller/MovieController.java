@@ -1,6 +1,6 @@
 package com.Jungmin.movie.domain.item.movie.controller;
 
-import com.Jungmin.movie.domain.item.movie.Movie;
+import com.Jungmin.movie.domain.item.movie.PopularMovie;
 import com.Jungmin.movie.domain.item.movie.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +16,13 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    @PostMapping("/refresh")
-    public List<Movie> refresh() throws InterruptedException {
-        return movieService.refreshPopularList();
+    @PostMapping("/refresh1")
+    public List<PopularMovie> refresh() throws InterruptedException {
+        return movieService.refreshGooglePopularMovies();
+    }
+
+    @PostMapping("/refresh2")
+    public List<PopularMovie> refreshNaver() {
+        return movieService.refreshNaverPopularMovies();
     }
 }

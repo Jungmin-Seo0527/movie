@@ -10,3 +10,7 @@
 따라서 Gradle 방법을 찾아 보았다. 위 사이트는 Selenium 말고도 다른 프레임워크, 라이브러리 의존성 추가 코드를 제공하고 잇어서 유용하게 사용할 수 있을 듯 하다.
 
 버전은 3.141.59 를 받았다. 4버전이 출시했지만 alpha, beta 만 존재해서 3 버전으로 받았다. 이전에 Selenium3 을 사용한 경험이 있어서 금방 배울 수 있을것이다.
+
+## batch insert
+
+[Spring Data에서 Batch Insert 최적화](https://homoefficio.github.io/2020/01/25/Spring-Data%EC%97%90%EC%84%9C-Batch-Insert-%EC%B5%9C%EC%A0%81%ED%99%94/)
