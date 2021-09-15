@@ -22,11 +22,20 @@ public class MovieService {
     private final MovieCrawling movieCrawling;
 
     @Transactional
-    public List<PopularMovie> refreshPopularList() throws InterruptedException {
+    public List<PopularMovie> refreshGooglePopularMovies() throws InterruptedException {
         List<PopularMovie> movies = movieCrawling.connectUrl(Platform.GOOGLE)
                 .scrollDownToBottom()
                 .scrapingSource()
                 .getResultByList();
+
+        return popularMovieRepository.saveAll(movies);
+    }
+
+    @Transactional
+    public List<PopularMovie> refreshNaverPopularMovies() {
+        List<PopularMovie> movies = movieCrawling.connectUrl(Platform.NAVER)
+                .scrapingNaverHtml()
+                .getResultNaverMoviesByList();
         return popularMovieRepository.saveAll(movies);
     }
 }

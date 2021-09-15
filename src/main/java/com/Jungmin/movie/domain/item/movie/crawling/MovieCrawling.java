@@ -1,6 +1,5 @@
 package com.Jungmin.movie.domain.item.movie.crawling;
 
-import com.Jungmin.movie.domain.item.movie.Movie;
 import com.Jungmin.movie.domain.item.movie.Platform;
 import com.Jungmin.movie.domain.item.movie.PopularMovie;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +23,11 @@ import java.util.List;
 public class MovieCrawling {
 
     private final WebDriver driver;
+    private final JavascriptExecutor js;
+    private final List<Document> htmlList = new ArrayList<>();
 
-    private JavascriptExecutor js;
     private String url;
     private Iterator<Element> movies;
-    private List<Document> htmlList = new ArrayList<>();
 
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static String WEB_DRIVER_PATH = "chromedriver_win32/chromedriver.exe";
@@ -44,13 +43,13 @@ public class MovieCrawling {
         options.setHeadless(true);
 
         driver = new ChromeDriver(options);
+        js = (JavascriptExecutor) driver;
     }
 
+    // TODO: 2021-09-16 Platform enum 값만으로 Map을 이용해서 알맞은 메소드 수행하기 (클라이언트 입장에서는 크롤링 과정을 몰라도 되도록, 오직 html 스크래핑 -> getResultList()
     public MovieCrawling connectUrl(Platform platform) {
         if (platform.equals(Platform.GOOGLE)) url = Platform.GOOGLE_POPULAR_URL;
         else if (platform.equals(Platform.NAVER)) url = Platform.NAVER_POPULAR_URL;
-        js = (JavascriptExecutor) driver;
-        driver.get(url);
         return this;
     }
 
@@ -62,6 +61,7 @@ public class MovieCrawling {
      */
     public MovieCrawling scrollDownToBottom() throws InterruptedException {
         log.info("scroll down to bottom");
+        driver.get(url);
         Long prev_height = (Long) js.executeScript("return document.body.scrollHeight");
         while (true) {
             js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
@@ -82,12 +82,14 @@ public class MovieCrawling {
      * @return List<Movie>
      */
     public MovieCrawling scrapingSource() {
+        log.info("scraping google html");
         Document html = Jsoup.parse(driver.getPageSource(), url);
         movies = html.getElementsByClass("Vpfmgd").iterator();
         return this;
     }
 
     public MovieCrawling scrapingNaverHtml() {
+        log.info("scraping naver html");
         for (int i = 1; i <= 6; i++) {
             String curUrl = Platform.NAVER_POPULAR_URL.replace("page=0", "page=" + i);
             driver.get(curUrl);
@@ -100,28 +102,37 @@ public class MovieCrawling {
         List<PopularMovie> movieList = new ArrayList<>();
 
         int rank = 1;
-        for (int i = 0; i < htmlList.size(); i++) {
+        for (Document document : htmlList) {
 
-            movies = htmlList.get(i).getElementsByTag("li").iterator();
+            movies = document.getElementsByTag("li").iterator();
 
             while (movies.hasNext()) {
-                Element movie = this.movies.next();
+                Element movie = movies.next();
                 // System.out.println("movie = " + movie);
                 String title = movie.getElementsByClass("NPI=a:dcontent").attr("title");
-                if(title.isBlank()) continue;
+                if (title.isBlank()) continue;
+                float star = Float.parseFloat(movie.getElementsByClass("score_num").text());
+                String link = Platform.NAVER_URL + movie.getElementsByClass("NPI=a:dcontent").attr("href");
 
-                System.out.println("title = " + title);
+                int price = Integer.parseInt(movie.getElementsByTag("p")
+                        .first()
+                        .getElementsByTag("span")
+                        .first()
+                        .text()
+                        .replaceAll("[^0-9]", ""));
+
+                movieList.add(PopularMovie.builder()
+                        .title(title)
+                        .rank(rank++)
+                        .price(price)
+                        .url(link)
+                        .star(star)
+                        .platform(Platform.NAVER)
+                        .build());
             }
         }
 
         return movieList;
-    }
-
-    public static void main(String[] args) {
-        MovieCrawling m = new MovieCrawling();
-        List<PopularMovie> resultNaverMoviesByList = m.connectUrl(Platform.NAVER)
-                .scrapingNaverHtml()
-                .getResultNaverMoviesByList();
     }
 
     public List<PopularMovie> getResultByList() {

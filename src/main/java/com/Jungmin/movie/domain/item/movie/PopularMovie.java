@@ -36,6 +36,8 @@ public class PopularMovie {
 
     private String url;
 
+    private float star;
+
     @Enumerated(EnumType.STRING)
     private Platform platform;
 }
