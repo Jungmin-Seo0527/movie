@@ -1,39 +1,50 @@
 package com.Jungmin.movie.domain.user;
 
+import com.Jungmin.movie.domain.comment.Comment;
 import com.Jungmin.movie.domain.item.movie.Movie;
+import com.Jungmin.movie.domain.post.Posts;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.CascadeType.*;
 import static lombok.AccessLevel.PRIVATE;
 
 @Entity
-@Getter @Setter(PRIVATE)
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter(PRIVATE) @Builder
+@NoArgsConstructor @AllArgsConstructor
 public class User {
 
     @Id @GeneratedValue
     @Column(name = "user_id")
     private Long id;
 
+    @Column(nullable = false, unique = true, length = 20)
     private String publicId;
 
     private String userName;
 
+    @Column(nullable = false, unique = true, length = 20)
     private String userNickName;
 
-    private List<Movie> movieList = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "author", cascade = ALL)
+    private List<Posts> postsList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author", cascade = ALL)
+    private List<Comment> commentList = new ArrayList<>();
+
 
 }
