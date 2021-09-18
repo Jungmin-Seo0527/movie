@@ -4,4 +4,6 @@ import com.Jungmin.movie.domain.item.movie.PopularMovie;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PopularMovieRepository extends JpaRepository<PopularMovie, Long> {
+
+    PopularMovie findByRank(int rank);
 }

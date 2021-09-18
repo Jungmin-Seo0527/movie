@@ -1,12 +1,11 @@
 package com.Jungmin.movie.domain.item.movie.crawling;
 
+import com.Jungmin.movie.domain.item.movie.Movie;
 import com.Jungmin.movie.domain.item.movie.Platform;
-import com.Jungmin.movie.domain.item.movie.PopularMovie;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -98,12 +97,10 @@ public class MovieCrawling {
         return this;
     }
 
-    public List<PopularMovie> getResultNaverMoviesByList() {
-        List<PopularMovie> movieList = new ArrayList<>();
+    public List<Movie> getResultNaverMoviesByList() {
+        List<Movie> movieList = new ArrayList<>();
 
-        int rank = 1;
         for (Document document : htmlList) {
-
             movies = document.getElementsByTag("li").iterator();
 
             while (movies.hasNext()) {
@@ -111,7 +108,6 @@ public class MovieCrawling {
                 // System.out.println("movie = " + movie);
                 String title = movie.getElementsByClass("NPI=a:dcontent").attr("title");
                 if (title.isBlank()) continue;
-                float star = Float.parseFloat(movie.getElementsByClass("score_num").text());
                 String link = Platform.NAVER_URL + movie.getElementsByClass("NPI=a:dcontent").attr("href");
 
                 int price = Integer.parseInt(movie.getElementsByTag("p")
@@ -121,12 +117,10 @@ public class MovieCrawling {
                         .text()
                         .replaceAll("[^0-9]", ""));
 
-                movieList.add(PopularMovie.builder()
+                movieList.add(Movie.builder()
                         .title(title)
-                        .rank(rank++)
                         .price(price)
                         .url(link)
-                        .star(star)
                         .platform(Platform.NAVER)
                         .build());
             }
@@ -135,8 +129,8 @@ public class MovieCrawling {
         return movieList;
     }
 
-    public List<PopularMovie> getResultByList() {
-        List<PopularMovie> movieList = new ArrayList<>();
+    public List<Movie> getResultByList() {
+        List<Movie> movieList = new ArrayList<>();
         int rank = 1;
         while (movies.hasNext()) {
             Element movie = movies.next();
@@ -147,8 +141,7 @@ public class MovieCrawling {
             }
             String price = movie.getElementsByClass("VfPpfd ZdBevf i5DZme").text().replaceAll("[^0-9]", "");
             String link = movie.getElementsByClass("JC71ub").attr("href");
-            movieList.add(PopularMovie.builder()
-                    .rank(rank++)
+            movieList.add(Movie.builder()
                     .title(title)
                     .price(Integer.parseInt(price))
                     .genre(genre)

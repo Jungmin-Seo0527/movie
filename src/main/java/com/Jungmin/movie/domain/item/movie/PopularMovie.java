@@ -8,36 +8,27 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @Entity
-@Getter @Setter(PRIVATE)
-@Builder
+@Getter @Setter(PRIVATE) @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PopularMovie {
 
     @Id @GeneratedValue
-    @Column(name = "movie_id")
+    @Column(name = "popularMovie_id")
     private Long id;
-
-    private String title;
 
     private int rank;
 
-    private int price;
-
-    private String genre;
-
-    private String url;
-
-    private float star;
-
-    @Enumerated(EnumType.STRING)
-    private Platform platform;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movie_id")
+    private Movie movie;
 }
