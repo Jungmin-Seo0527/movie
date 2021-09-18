@@ -1,6 +1,6 @@
 package com.Jungmin.movie.domain.item.movie;
 
-import com.Jungmin.movie.domain.post.Posts;
+import com.Jungmin.movie.domain.comment.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,17 +15,16 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
-@Getter @Setter(PRIVATE)
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter(PRIVATE) @Builder
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PRIVATE)
 public class Movie {
 
     @Id @GeneratedValue
@@ -46,5 +45,9 @@ public class Movie {
     @Builder.Default
     @ToString.Exclude
     @OneToMany(mappedBy = "movie")
-    private List<Posts> postsList = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
+
+    public void writeComment(Comment comment) {
+        comments.add(comment);
+    }
 }
