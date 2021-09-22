@@ -2,6 +2,7 @@ package com.Jungmin.movie.domain.item.movie.service;
 
 import com.Jungmin.movie.domain.comment.Comment;
 import com.Jungmin.movie.domain.comment.repository.CommentRepository;
+import com.Jungmin.movie.domain.item.movie.Exception.MovieNotFoundException;
 import com.Jungmin.movie.domain.item.movie.Movie;
 import com.Jungmin.movie.domain.item.movie.PopularMovie;
 import com.Jungmin.movie.domain.item.movie.dto.RequestMovieCommentDto;
@@ -56,7 +57,7 @@ class MovieServiceTest {
         // when
         PopularMovie popularMovie = popularMovieRepository.findByRank(1);
         Long movieIdByPopularRepository = popularMovie.getMovie().getId();
-        Long movieIdByMovieRepository = movieRepository.findByTitle(popularMovie.getMovie().getTitle()).getId();
+        Long movieIdByMovieRepository = movieRepository.findByTitle(popularMovie.getMovie().getTitle()).orElseThrow(MovieNotFoundException::new).getId();
 
         // then
         assertThat(movieIdByMovieRepository).isEqualTo(movieIdByPopularRepository);

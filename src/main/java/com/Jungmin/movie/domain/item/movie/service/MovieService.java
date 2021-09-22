@@ -2,7 +2,7 @@ package com.Jungmin.movie.domain.item.movie.service;
 
 import com.Jungmin.movie.domain.comment.Comment;
 import com.Jungmin.movie.domain.comment.repository.CommentRepository;
-import com.Jungmin.movie.domain.item.movie.Exception.NonExistentMovieException;
+import com.Jungmin.movie.domain.item.movie.Exception.MovieNotFoundException;
 import com.Jungmin.movie.domain.item.movie.Movie;
 import com.Jungmin.movie.domain.item.movie.Platform;
 import com.Jungmin.movie.domain.item.movie.PopularMovie;
@@ -18,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -39,7 +41,15 @@ public class MovieService {
                 .scrollDownToBottom()
                 .scrapingSource()
                 .getResultByList();
-        movieRepository.saveAll(movies);
+
+        List<Movie> saveMovie = new ArrayList<>();
+        for (Movie movie : movies) {
+            Optional<Movie> findMovie = movieRepository.findMovie(movie.getTitle(), movie.getGenre(), movie.getUrl());
+            findMovie.ifPresent(m -> {
+
+            });
+        }
+        movieRepository.saveAll(saveMovie);
 
         final int[] rank = {1};
         movies.stream().map(movie -> PopularMovie.builder()
@@ -70,7 +80,7 @@ public class MovieService {
     @Transactional
     public Long writeComment(RequestMovieCommentDto commentDto) {
         User user = userRepository.findById(commentDto.getUserId()).orElseThrow(NonExistentUserException::new);
-        Movie movie = movieRepository.findById(commentDto.getMovieId()).orElseThrow(NonExistentMovieException::new);
+        Movie movie = movieRepository.findById(commentDto.getMovieId()).orElseThrow(MovieNotFoundException::new);
         return commentRepository.save(Comment.createComment(user, movie, commentDto.getContents()))
                 .getId();
     }
