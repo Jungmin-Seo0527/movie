@@ -11,7 +11,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     Optional<Movie> findByTitle(String title);
 
-    @Query("select m from Movie m where m.title = :title and m.genre = genre and m.url = url")
+    @Query("select m from Movie m where m.title = :title and m.genre = :genre and m.url = :url")
     Optional<Movie> findMovie(@Param("title") String title,
                               @Param("genre") String genre,
                               @Param("url") String url);

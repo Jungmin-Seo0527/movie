@@ -50,4 +50,8 @@ public class Movie {
     public void writeComment(Comment comment) {
         comments.add(comment);
     }
+
+    public void pricingChange(int price) {
+        setPrice(price);
+    }
 }

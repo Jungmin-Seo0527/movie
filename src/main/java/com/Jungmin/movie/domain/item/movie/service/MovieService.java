@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,7 +33,7 @@ public class MovieService {
 
     private final MovieCrawling movieCrawling;
 
-    // TODO: 2021-09-19 새롭게 갱신된 인기 영화 목록중 이미 Movie 테이블에 존재하는 영화 처리  - 영화 속성중 불변인 것들에 대한 hashcode, equals 메소드 재정의: dirty checking
+    // TODO: 2021-09-23 리펙토링 
     @Transactional
     public List<Movie> refreshGooglePopularMovies() throws InterruptedException {
         List<Movie> movies = movieCrawling.connectUrl(Platform.GOOGLE)
@@ -43,21 +42,42 @@ public class MovieService {
                 .getResultByList();
 
         List<Movie> saveMovie = new ArrayList<>();
-        for (Movie movie : movies) {
-            Optional<Movie> findMovie = movieRepository.findMovie(movie.getTitle(), movie.getGenre(), movie.getUrl());
-            findMovie.ifPresent(m -> {
+        List<Movie> movies2 = new ArrayList<>();
 
-            });
-        }
+        checkDuplicatedMovies(movies, saveMovie, movies2);
+
+        log.info("Insert 쿼리문");
         movieRepository.saveAll(saveMovie);
 
+        rankingMovies(movies2);
+        return movies;
+    }
+
+    private void rankingMovies(List<Movie> movies2) {
+        popularMovieRepository.deleteAll();
         final int[] rank = {1};
-        movies.stream().map(movie -> PopularMovie.builder()
+        movies2.stream().map(movie -> PopularMovie.builder()
                         .rank(rank[0]++)
                         .movie(movie)
                         .build())
                 .forEach(popularMovieRepository::save);
-        return movies;
+    }
+
+    private void checkDuplicatedMovies(List<Movie> movies, List<Movie> saveMovie, List<Movie> movies2) {
+        log.info("이미 DB에 저장되어 있는 영화 정보 확인");
+        for (Movie movie : movies) {
+            movieRepository.findMovie(movie.getTitle(), movie.getGenre(), movie.getUrl())
+                    .ifPresentOrElse(
+                            (m) -> {
+                                m.pricingChange(movie.getPrice());
+                                movies2.add(m);
+                            },
+                            () -> {
+                                saveMovie.add(movie);
+                                movies2.add(movie);
+                            }
+                    );
+        }
     }
 
     @Transactional
@@ -67,12 +87,7 @@ public class MovieService {
                 .getResultNaverMoviesByList();
         movieRepository.saveAll(movies);
 
-        final int[] rank = {1};
-        movies.stream().map(movie -> PopularMovie.builder()
-                        .rank(rank[0]++)
-                        .movie(movie)
-                        .build())
-                .forEach(popularMovieRepository::save);
+        rankingMovies(movies);
 
         return movies;
     }
