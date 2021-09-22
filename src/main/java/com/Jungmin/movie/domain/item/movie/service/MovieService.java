@@ -32,6 +32,7 @@ public class MovieService {
 
     private final MovieCrawling movieCrawling;
 
+    // TODO: 2021-09-19 새롭게 갱신된 인기 영화 목록중 이미 Movie 테이블에 존재하는 영화 처리  - 영화 속성중 불변인 것들에 대한 hashcode, equals 메소드 재정의: dirty checking
     @Transactional
     public List<Movie> refreshGooglePopularMovies() throws InterruptedException {
         List<Movie> movies = movieCrawling.connectUrl(Platform.GOOGLE)
